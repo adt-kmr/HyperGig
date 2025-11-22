@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HyperGig+ – Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="hg-body">
+  <div class="app">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">H</div>
+        <div>
+          <div class="brand-name">HyperGig+</div>
+          <div class="brand-tagline">Financial cockpit for gig workers</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <span class="nav-item active" id="nav-dashboard">Dashboard</span>
+        <span class="nav-item" id="nav-tax">Tax &amp; Insurance</span>
+        <span class="nav-item">Loans</span>
+        <span class="nav-item">Settings</span>
+      </nav>
+
+      <div class="user-pill">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <span id="userName">User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="main-card" id="mainDashboard">
+      <div class="welcome-row">
+        <div>
+          <h2 class="welcome-title">Welcome back, <span id="welcomeName">User</span>!</h2>
+          <p class="welcome-subtitle">Here’s your HyperGig+ overview for this month.</p>
+        </div>
+
+        <div class="chip-row">
+          <button class="chip chip-primary" onclick="openIncomeModal()">Add Income</button>
+          <button class="chip" onclick="openExpenseModal()">Add Expense</button>
+          <button class="chip" id="applyLoanBtn">Apply for Loan</button>
+        </div>
+      </div>
+
+      <!-- top metric cards -->
+      <section class="grid">
+        <article class="card">
+          <div class="card-title">Total Income (This Month)</div>
+          <div class="card-value" id="cardIncome">₹0</div>
+          <div class="card-sub" id="cardIncomeNote">From all delivery platforms</div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">Expenses (This Month)</div>
+          <div class="card-value" id="cardExpense">₹0</div>
+          <div class="card-sub" id="cardExpenseRatio">0% of income</div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">Income Stability Index</div>
+          <div class="card-value" id="cardStability">0%</div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="stabilityBar"></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">GIG Score</div>
+          <div class="card-value" id="cardLoanScore">0 / 100</div>
+          <span class="pill" id="cardLoanLabel">Low Eligibility</span>
+        </article>
+      </section>
+
+      <!-- row with charts + balances -->
+      <section class="grid-2">
+        <!-- income doughnut -->
+        <article class="card">
+          <div class="chart-title-row">
+            <span class="chart-title">Income Breakdown</span>
+            <span class="chart-subtitle">Hover to see each source</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="incomeChart"></canvas>
+          </div>
+        </article>
+
+        <!-- expense doughnut -->
+        <article class="card">
+          <div class="chart-title-row">
+            <span class="chart-title">Expenses Breakdown</span>
+            <span class="chart-subtitle">Fuel, Food, Health &amp; more</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="expenseChart"></canvas>
+          </div>
+        </article>
+
+        <!-- balances + alerts -->
+        <article class="card">
+          <div class="card-title">Wallet &amp; Bank Balances</div>
+          <div class="card-value" id="cardBalance">₹0</div>
+          <div class="card-sub" id="cardWalletBank">Wallet ₹0 • Bank ₹0</div>
+
+          <div class="tags">
+            <span class="tag" id="tagTax">Tax Estimate: ₹0</span>
+            <span class="tag">KYC: Verified</span>
+          </div>
+
+          <h4 class="section-title-sm">Alerts</h4>
+          <ul class="alerts-list" id="alertsList"></ul>
+        </article>
+      </section>
+
+      <!-- trends -->
+      <h3 class="section-title">Income Trends</h3>
+      <section class="trend-card">
+        <p class="trend-sub">Weekly earning, monthly trends &amp; stability simulation.</p>
+        <div class="chart-container chart-container-lg">
+          <canvas id="trendChart"></canvas>
+        </div>
+        <h4 class="section-title-sm">Weekly Income Trend</h4>
+<div class="chart-container chart-container-lg">
+  <canvas id="weeklyTrendChart"></canvas>
+</div>
+
+      </section>
+    </main>
+
+    <!-- TAX & INSURANCE SCREEN -->
+    <main class="main-card" id="taxScreen" style="display: none;">
+      <h2 class="tax-title">Tax &amp; Insurance Summary</h2>
+      <p class="trend-sub" id="taxSubtitle">
+        Overview of your yearly tax, GST filings and insurance coverage.
+      </p>
+
+      <section class="grid">
+        <article class="card">
+          <div class="card-title">Approx. Yearly Tax</div>
+          <div class="card-value" id="taxYearly">₹0</div>
+          <div class="card-sub">Based on your current earning pattern</div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">Last GST Filing</div>
+          <div class="card-value" id="taxGSTDate">--</div>
+          <div class="card-sub">Stay compliant to unlock better loans</div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">Insurance Expiry</div>
+          <div class="card-value" id="taxInsExpiry">--</div>
+          <div class="card-sub">Renew in time to protect your income</div>
+        </article>
+
+        <article class="card">
+          <div class="card-title">Suggested Top-ups</div>
+          <ul class="alerts-list" id="taxTopups"></ul>
+        </article>
+      </section>
+    </main>
+  </div>
+  <!-- ADD INCOME MODAL -->
+<div id="incomeModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Add Income</h3>
+
+  <label>Income Source</label>
+  <select id="incomeSource">
+    <option value="">Select Source</option>
+    <option value="Zomato">Zomato</option>
+    <option value="Swiggy">Swiggy</option>
+    <option value="Rapido">Rapido</option>
+    <option value="Uber">Uber</option>
+    <option value="Ola">Ola</option>
+    <option value="Blinkit">Blinkit</option>
+    <option value="Amazon Flex">Amazon Flex</option>
+    <option value="Freelancing">Freelancing</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label>Amount</label>
+  <input id="incomeAmount" type="number" placeholder="Amount in ₹" />
+
+  <label>Date</label>
+  <input id="incomeDate" type="date">
+
+
+    <button class="chip chip-primary" onclick="submitIncome()">Save</button>
+    <button class="chip" onclick="closeIncomeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ADD EXPENSE MODAL -->
+<div id="expenseModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>Add Expense</h3>
+
+  <label>Expense Category</label>
+  <select id="expenseCategory">
+    <option value="">Select Category</option>
+    <option value="Fuel">Fuel</option>
+    <option value="Food">Food</option>
+    <option value="Maintenance">Maintenance</option>
+    <option value="Repairs">Repairs</option>
+    <option value="EMI">EMI</option>
+    <option value="Health">Health</option>
+    <option value="Insurance">Insurance</option>
+    <option value="Shopping">Shopping</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label>Amount</label>
+  <input id="expenseAmount" type="number" placeholder="Amount in ₹" />
+
+  <label>Date</label>
+  <input id="expenseDate" type="date">
+
+
+    <button class="chip chip-primary" onclick="submitExpense()">Save</button>
+    <button class="chip" onclick="closeExpenseModal()">Cancel</button>
+  </div>
+</div>
+  <!-- Loan Apply Modal -->
+  <div id="loanModal" class="modal-bg" style="display:none;">
+    <div class="modal-box">
+      <h2>Apply for Loan</h2>
+
+      <label>Loan Type</label>
+      <select id="loanType">
+        <option value="personal">Personal Loan</option>
+        <option value="business">Business Loan</option>
+        <option value="quick_cash">Quick Cash Loan</option>
+      </select>
+
+      <label>Loan Amount (₹)</label>
+      <input type="number" id="loanAmount" placeholder="50000">
+
+      <div class="modal-actions">
+        <button class="chip" id="closeLoanModal">Cancel</button>
+        <button class="chip chip-primary" id="submitLoan">Apply</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
