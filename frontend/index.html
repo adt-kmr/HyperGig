@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HyperGig+ – Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="hg-body">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-left">
+        <div class="logo-row">
+          <div class="logo-icon">H</div>
+          <div class="logo-text">HyperGig+</div>
+        </div>
+        <h1 class="login-title">Sign in to HyperGig+</h1>
+        <p class="login-subtitle">Track your income, expenses, loans & taxes in one smart cockpit.</p>
+
+        <form id="loginForm" class="login-form">
+          <div class="input-group">
+            <label for="mobile">Phone Number</label>
+            <input
+              class="input-field"
+              id="mobile"
+              type="tel"
+              placeholder="9876543210"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="kycId">Aadhaar / PAN</label>
+            <input
+              class="input-field"
+              id="kycId"
+              type="text"
+              placeholder="ABCD1234E"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="name">Full Name (for new users)</label>
+            <input
+              class="input-field"
+              id="name"
+              type="text"
+              placeholder="Alex Kumar"
+            />
+          </div>
+
+          <div class="kyc-row">
+            <div class="kyc-status">
+              <div class="kyc-dot" id="kycDot"></div>
+              <span class="kyc-text" id="kycText">KYC not verified</span>
+            </div>
+            <span class="forgot-link">Need help?</span>
+          </div>
+
+          <div class="error-text" id="errorMsg">Please fill all fields correctly.</div>
+          <button type="submit" class="btn-primary">Verify & Sign In</button>
+        </form>
+
+        <div class="divider">
+          <span class="line"></span>
+          <span class="divider-text">Demo Credentials</span>
+          <span class="line"></span>
+        </div>
+        
+        <div style="background: #1f0a33; padding: 12px; border-radius: 12px; font-size: 12px; color: #c4b5fd; margin-bottom: 12px;">
+          <div><strong>Phone:</strong> 9876543210</div>
+          <div><strong>KYC:</strong> ABCD1234E</div>
+          <div style="margin-top: 6px; font-size: 11px; color: #9ca3af;">Use these credentials to login with demo data</div>
+        </div>
+
+        <p class="signup-text">
+          New user? Fill name field to auto-register
+        </p>
+      </div>
+
+<div class="login-right">
+  <img 
+    src="logo.png" 
+    alt="HyperGig Logo" 
+    class="login-logo-img"
+  />
+</div>
+
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    
+    const loginForm = document.getElementById("loginForm");
+    const kycDot = document.getElementById("kycDot");
+    const kycText = document.getElementById("kycText");
+    const errorMsg = document.getElementById("errorMsg");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorMsg.style.display = "none";
+
+      const name = document.getElementById("name").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const kycId = document.getElementById("kycId").value.trim();
+
+      if (!mobile || !kycId) {
+        errorMsg.textContent = "Please fill mobile and KYC fields.";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      try {
+        let response;
+        
+        // If name is provided, try to register, otherwise login
+        if (name) {
+          response = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, mobile, kycId })
+          });
+        } else {
+          response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile, kycId })
+          });
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          errorMsg.textContent = data.error || 'Authentication failed';
+          errorMsg.style.display = "block";
+          return;
+        }
+
+        // Mark KYC as verified
+        kycDot.classList.add("kyc-dot-verified");
+        kycText.classList.add("kyc-text-verified");
+        kycText.textContent = "KYC verified";
+
+        // Save to localStorage
+        localStorage.setItem("hg_token", data.token);
+        localStorage.setItem("hg_userName", data.user.name);
+        localStorage.setItem("hg_userMobile", data.user.mobile);
+        localStorage.setItem("hg_userKYC", kycId);
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 600);
+
+      } catch (error) {
+        errorMsg.textContent = "Server connection failed. Make sure backend is running on http://localhost:3000";
+        errorMsg.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
