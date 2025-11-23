@@ -175,31 +175,6 @@ Income → Scoring → Offer Eligibility → User Financial Identity
 
 ## Production Architecture
 
-Below is the target architecture for a complete deployment.
-
-### High-Level Microservices Architecture
-
-
-┌───────────────────────────────┐
- │ HyperGig+ Frontend │
- │ React / React Native │
- └───────────────┬────────────────┘
- │
- API Gateway (Nginx)
- │
- ┌──────────────┼──────────────────────────┐
- │ │ │
- User Service Income Service Scoring Service
- Auth/KYC Income ingestion ML models (LightGBM)
- JWT tokens Cashflow parsing Rule-based fallback
- │ │
- └──────── Aggregator ───────┘
- │
- Offers & Lending Engine
- │
- Tax & Insurance Intelligence Layer
- │
- Dashboard Aggregation Layer
 
 ### Technology Stack (Planned)
 
